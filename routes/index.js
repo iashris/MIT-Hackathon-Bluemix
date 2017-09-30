@@ -12,71 +12,83 @@ twitter=new twit({
 var PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
 
 var personality_insights = new PersonalityInsightsV3({
-  username: "83e99eed-f755-443a-a298-0773602e8db9",
-  password: "KD4O5dDyeQKd",
-  version_date: '2016-10-20'
+	username: "83e99eed-f755-443a-a298-0773602e8db9",
+	password: "KD4O5dDyeQKd",
+	version_date: '2016-10-20'
 });
 var toContentItem = function(tweet){
-  return {
-    id: tweet.id_str,
-    language: tweet.lang,
-    contenttype: 'text/plain',
-    content: tweet.text.replace('[^(\\x20-\\x7F)]*',''),
-    created: Date.parse(tweet.created_at),
-    reply: tweet.in_reply_to_screen_name != null
-  };
+	return {
+		id: tweet.id_str,
+		language: tweet.lang,
+		contenttype: 'text/plain',
+		content: tweet.text.replace('[^(\\x20-\\x7F)]*',''),
+		created: Date.parse(tweet.created_at),
+		reply: tweet.in_reply_to_screen_name != null
+	};
 };
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+	res.render('index', { title: 'Express' });
 });
 
 
-router.get('/getTweets/:handle', function (req, res) {
-var names=req.params.handle.split('~');
-var params1 = {screen_name: names[0],count:200};
-var params2 = {screen_name: names[1],count:200};
+router.get('/getTweets/:handle', function (req, resi) {
+	var names=req.params.handle.split('~');
+//lets assume that names[0] is you and names[1] is all people.
+var persons=[];
+var proceed=function(perz){
+	var you=perz.shift();
+	var msg="";var perpo=0;
+	for(var i=0;i<5;i++){
+		var diff=you.personality[i].percentile-perz[0].personality[i].percentile;
+		perpo+=Math.abs(diff);
+		console.log('diff is '+diff);
+		msg+=you.personality[i].trait_id+" : "+diff+'\n';
+		//console.log(msg);
+	}
+	msg+="\nPercentile points to go : "+perpo;
+	resi.send(msg);
+}
 
-twitter.get('statuses/user_timeline', params1, function(error1, tweetz1, response) {
-  	tweets1=tweetz1;
-    // res.render('tweets',{tweets:tweets});
-    twitter.get('statuses/user_timeline', params2, function(error2, tweetz2, response) {
-    		tweets2=tweetz2;
-   			 var params1 = {
-			  // Get the content items from the JSON file.
-			  content_items: tweets1.map(toContentItem),
-			  consumption_preferences: true,
-			  raw_scores: true,
-			  headers: {
-			    'accept-language': 'en',
-			    'accept': 'application/json'
-			  }
+
+for(var i=0;i<names.length;i++){
+	var naam=names[i];
+	twitter.get('users/search',{q:naam,page:1,count:1},function(err,users){
+		var node=users[0];
+		var paramsfortweets={screen_name:node.screen_name,count:250};
+		twitter.get('statuses/user_timeline',paramsfortweets,function(err,tweetz,response){
+			var paramsforpersonality = {
+				content_items: tweetz.map(toContentItem),
+				consumption_preferences: true,
+				raw_scores: true,
+				headers: {
+					'accept-language': 'en',
+					'accept': 'application/json'
+				}
 			}
-			  var params2 = {
-			  // Get the content items from the JSON file.
-			  content_items: tweets2.map(toContentItem),
-			  consumption_preferences: true,
-			  raw_scores: true,
-			  headers: {
-			    'accept-language': 'en',
-			    'accept': 'application/json'
-			  }
-			}
-    		//res.render('tweets',{setone:tweets1,settwo:tweets2});
-    		personality_insights.profile(params1, function(error, response1) {
-			    
-	    		personality_insights.profile(params2, function(error, response2) {
-				   var personalitytwo=JSON.stringify(response2, null, 2);
-	    		   var personalityone=JSON.stringify(response1, null, 2);
-    				res.send(personalityone);
-			  });
-			  });
+			personality_insights.profile(paramsforpersonality, function(err, res) {
+				console.log('resssult : '+res)
+				var prsnlty=res.personality;
+				var q={
+					name:node.name,
+					screen_name:node.screen_name,
+					img:node.profile_image_url,
+					personality:prsnlty
+				};
+				if(q!=null)persons.push(q);
+				if(persons.length==names.length){
+					proceed(persons);
+				}
 			});
-    		
-    });
-  });
+		});
+	});
+
+	
+}
+//Persons are loaded
 
 
+});
 
 
 module.exports = router;

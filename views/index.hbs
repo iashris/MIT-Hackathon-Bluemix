@@ -9,6 +9,12 @@
 
  <script>
         $('#submit').click(function(){
-            location.href='http://localhost:3000/getTweets/iashris~BarackObama';
+        	var $names=$('input');
+        	var construct="http://localhost:3000/getTweets/";
+        	for(var i=0;i<$names.length;i++){
+        		construct+=encodeURIComponent($($names[i]).val());
+        		if(i!=$names.length-1)construct+='~';
+        	}
+            location.href=construct;
         });
  </script>
