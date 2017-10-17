@@ -3,7 +3,8 @@ html,body{
 	background: #673AB7;  /* fallback for old browsers */
 background: -webkit-linear-gradient(to right, #512DA8, #673AB7);  /* Chrome 10-25, Safari 5.1-6 */
 background: linear-gradient(to right, #512DA8, #673AB7); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+text-align: center;
+color: white;
 }
 
 #mainla{
@@ -12,10 +13,9 @@ background: linear-gradient(to right, #512DA8, #673AB7); /* W3C, IE 10+/ Edge, F
 	color:white;
 	border:2px solid white;
 	display: inline-block;
-	margin-left: 24vw;
 	padding:2vh 3vw;
 	margin-top:5vh;
-	margin-bottom: 4vh;
+	margin-bottom: 20vh;
 }
 
 .base--p{
@@ -43,9 +43,9 @@ input{
 	border-bottom: 2px solid white;
 	margin-left: 5px;
 	padding-bottom: -15px;
-	max-width: 300px;
+	width: 300px;
 	color:white;
-
+	font-size: 1.3em;
 }
 #trigger{
 	background: white;
@@ -62,4 +62,25 @@ input{
 }
 .greenz{
 	color:green;
+}
+.centralimg{
+	border-radius: 50%;
+	text-align: center;
+	max-width: 200px;
+	display: block;
+	margin:0 auto;
+	margin-top: 10vh;
+}
+.youname{
+	color:white;
+	text-align: center;
+	margin-bottom: 3em;
+}
+button{
+	background: white;
+	color:black;
+	padding:20px;
+	border:0;
+	padding:10px 30px;
+	border-radius: 20px;
 }

@@ -36,7 +36,8 @@ router.get('/getTweets/:handle', function (req, resi) {
 	var names=req.params.handle.split('~');
 //lets assume that names[0] is you and names[1] is all people.
 var persons=[];
-var proceed=function(perz){
+var proceed=function(pero){
+	var perz=pero;
 	var you=perz.shift();
 	var msg="";var perpo=0;
 	for(var i=0;i<5;i++){
@@ -47,7 +48,30 @@ var proceed=function(perz){
 		//console.log(msg);
 	}
 	msg+="\nPercentile points to go : "+perpo;
-	resi.send(msg);
+	var months=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+	var moviescreative=["Mulholland Dr. ","Adaptation. ","Enter the Void","The Holy Mountain","The Grand Budapest Hotel ","Birdman or (The Unexpected Virtue of Ignorance)","The Artist","Playtime","Being John Malkovich","Who Framed Roger Rabbit","Russian Ark","Synecdoche, New York","Eraserhead","The Lobster","Memento","Decasia","Dogville","Brazil","Only Lovers Left Alive ","eXistenZ","2001: A Space Odyssey","Sin City","Blue","Pleasantville","The Cook, the Thief, His Wife & Her Lover","Cannibal Holocaust ","Pulp Fiction","Zelig","The Discreet Charm of the Bourgeoisie","Paprika","Pan's Labyrinth","Evil Dead II","Waltz with Bashir","Suspiria","Exit Through the Gift Shop","Weekend","The Fall","My Dinner with Andre","Dogtooth","Last Year at Marienbad"];
+	var moviesserious=["127 Hours","American Beauty","American History X","Argo","Babel","Dallas Buyers Club","The Departed","Fight Club","Filth","Gangs of New York","Gone Girl","Gran Torino","The Green Mile","Heat","Insomnia","Jackie Brown","The King's Speech","The Last King of Scotland","Layer Cake","Léon: The Professional","Lucky Number Slevin","Memento","Natural Born Killers","No Country for Old Men","One Flew Over the Cuckoo's Nest","Point Break","The Raid 2","Rain Man","Saving Private Ryan","Se7en","The Shawshank Redemption","Shutter Island","Slumdog Millionaire","Snatch","Stand by Me","Taken","The Talented Mr. Ripley","The Usual Suspects","The Wolf of Wall Street","127 Hours","American Beauty"];
+	var monthdata=[];
+	if(you.personality[0].percentile-perz[0].personality[0].percentile<0.2){
+		//target is more open
+		var muvis;
+		months.forEach(function(v,i){
+			muvis=moviescreative[parseInt(Math.random()*moviescreative.length)];
+			monthdata[i]={month:months[i],movie:muvis}
+		});
+
+	}
+		else
+		{
+
+			months.forEach(function(v,i){
+			muvis=moviesserious[parseInt(Math.random()*moviesserious.length)];
+			monthdata[i]={month:months[i],movie:muvis}
+		});
+
+	}
+	resi.render('output',{imgsource:you.img,msg:msg,yourname:you.name,mo:monthdata});
+
 }
 
 
@@ -72,9 +96,10 @@ for(var i=0;i<names.length;i++){
 				var q={
 					name:node.name,
 					screen_name:node.screen_name,
-					img:node.profile_image_url,
+					img:node.profile_image_url.replace('_normal',''),
 					personality:prsnlty
 				};
+				console.log(q);
 				if(q!=null)persons.push(q);
 				if(persons.length==names.length){
 					proceed(persons);
