@@ -13,7 +13,7 @@
  <script>
         $('#submit').click(function(){
         	var $names=$('input');
-        	var construct="http://localhost:3000/getTweets/";
+        	var construct="https://youplus18.herokuapp.com/getTweets/";
         	for(var i=0;i<$names.length;i++){
         		construct+=encodeURIComponent($($names[i]).val());
         		if(i!=$names.length-1)construct+='~';
